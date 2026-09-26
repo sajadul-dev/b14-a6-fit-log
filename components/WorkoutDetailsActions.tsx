@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import type { Workout } from "@/types/Workout";
 import {
@@ -8,13 +8,56 @@ import {
   getSaved,
   savePlan,
   saveSaved,
+  PLAN_STORAGE_KEY,
+  STORAGE_UPDATE_EVENT,
 } from "@/lib/storage";
 
 const toastStyle = {
   background: "#111318",
   color: "#f5f7fa",
   border: "1px solid #2a2f39",
+  borderRadius: "10px",
 };
+
+function subscribeStorage(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener(STORAGE_UPDATE_EVENT, callback);
+  window.addEventListener("storage", callback);
+
+  return () => {
+    window.removeEventListener(STORAGE_UPDATE_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getPlanSnapshot(): string {
+  if (typeof window === "undefined") {
+    return "[]";
+  }
+
+  return window.localStorage.getItem(PLAN_STORAGE_KEY) ?? "[]";
+}
+
+function getServerPlanSnapshot(): string {
+  return "[]";
+}
+
+function parsePlan(snapshot: string): Workout[] {
+  try {
+    const parsed: unknown = JSON.parse(snapshot);
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed as Workout[];
+  } catch {
+    return [];
+  }
+}
 
 function CalendarIcon() {
   return (
@@ -52,39 +95,37 @@ export default function WorkoutDetailsActions({
 }: {
   workout: Workout;
 }) {
-  const [planCount, setPlanCount] = useState(0);
-  const [inPlan, setInPlan] = useState(false);
+  const planSnapshot = useSyncExternalStore(
+    subscribeStorage,
+    getPlanSnapshot,
+    getServerPlanSnapshot,
+  );
 
-  useEffect(() => {
-    const plan = getPlan();
+  const plan = useMemo(() => {
+    return parsePlan(planSnapshot);
+  }, [planSnapshot]);
 
-    setPlanCount(plan.length);
-    setInPlan(plan.some((item) => item.id === workout.id));
-  }, [workout.id]);
+  const planCount = plan.length;
+  const inPlan = plan.some((item) => item.id === workout.id);
 
   const handleAddToPlan = () => {
-    const plan = getPlan();
+    const currentPlan = getPlan();
 
-    if (plan.some((item) => item.id === workout.id)) {
+    if (currentPlan.some((item) => item.id === workout.id)) {
       toast("Already in plan", {
         style: toastStyle,
       });
       return;
     }
 
-    if (plan.length >= 5) {
+    if (currentPlan.length >= 5) {
       toast("Plan is full — maximum 5 workouts", {
         style: toastStyle,
       });
       return;
     }
 
-    const updatedPlan = [...plan, workout];
-
-    savePlan(updatedPlan);
-
-    setPlanCount(updatedPlan.length);
-    setInPlan(true);
+    savePlan([...currentPlan, workout]);
 
     toast.success("Added to today's plan", {
       style: toastStyle,
