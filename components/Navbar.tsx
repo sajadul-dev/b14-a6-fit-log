@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#1f232c] bg-[#090a0d]/95 backdrop-blur-md">
-      <nav className="mx-auto flex min-h-18 max-w-350 items-center justify-between px-5 sm:px-7 lg:px-8">
+     <nav className="flex min-h-19 items-center justify-between px-5 sm:px-6 lg:px-7">
         {/* Logo */}
         <Link
           href="/"
@@ -28,19 +28,19 @@ export default function Navbar() {
           <img
             src="/logo.png"
             alt="FitLog"
-            className="h-7 w-7 object-contain"
+            className="h-6 w-6 object-contain sm:h-7 sm:w-7"
           />
 
-          <span className="text-[18px] font-extrabold tracking-wide text-white">
+          <span className="text-base font-extrabold tracking-wide text-white sm:text-lg">
             FITLOG
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-2 md:flex">
+        {/* Desktop navigation */}
+        <div className="hidden items-center gap-1 md:flex">
           <Link
             href="/"
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition sm:text-sm ${
               isHome
                 ? "bg-[#b6ff00] text-black"
                 : "text-[#9ca3af] hover:bg-[#151820] hover:text-white"
@@ -51,7 +51,7 @@ export default function Navbar() {
 
           <Link
             href="/my-plan"
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition sm:text-sm ${
               isPlan
                 ? "bg-[#b6ff00] text-black"
                 : "text-[#9ca3af] hover:bg-[#151820] hover:text-white"
@@ -61,11 +61,11 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Desktop Status */}
-        <div className="hidden items-center gap-5 md:flex">
+        {/* Desktop counters */}
+        <div className="hidden items-center gap-4 md:flex">
           <Link
             href="/my-plan"
-            className="group flex items-center gap-2 text-sm text-[#9ca3af] transition hover:text-white"
+            className="flex items-center gap-2 text-xs text-[#9ca3af] transition hover:text-white sm:text-sm"
           >
             <span>Plan</span>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
 
           <Link
             href="/my-plan"
-            className="group flex items-center gap-2 text-sm text-[#9ca3af] transition hover:text-white"
+            className="flex items-center gap-2 text-xs text-[#9ca3af] transition hover:text-white sm:text-sm"
           >
             <span>Saved</span>
 
@@ -86,11 +86,11 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile menu button */}
         <button
           type="button"
           onClick={() => setMenuOpen((current) => !current)}
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-[#2a2f39] text-white transition hover:border-[#b6ff00] hover:text-[#b6ff00] md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-[#2a2f39] text-white transition hover:border-[#b6ff00] hover:text-[#b6ff00] md:hidden"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
         >
@@ -116,11 +116,11 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t border-[#1f232c] bg-[#0d0f13] md:hidden">
-          <div className="mx-auto max-w-350 px-5 py-4">
-            <div className="flex flex-col gap-2">
+          <div className="px-5 py-4">
+            <div className="flex flex-col gap-1">
               <Link
                 href="/"
                 onClick={closeMenu}
