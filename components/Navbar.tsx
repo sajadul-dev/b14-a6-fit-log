@@ -2,14 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  getPlan,
+  getSaved,
+  STORAGE_UPDATE_EVENT,
+} from "@/lib/storage";
 
 export default function Navbar() {
   const pathname = usePathname();
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const [planCount, setPlanCount] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
 
   const isHome = pathname === "/";
   const isPlan = pathname.startsWith("/my-plan");
+
+  useEffect(() => {
+    const syncCounts = () => {
+      setPlanCount(getPlan().length);
+      setSavedCount(getSaved().length);
+    };
+
+    syncCounts();
+
+    window.addEventListener(STORAGE_UPDATE_EVENT, syncCounts);
+    window.addEventListener("storage", syncCounts);
+
+    return () => {
+      window.removeEventListener(STORAGE_UPDATE_EVENT, syncCounts);
+      window.removeEventListener("storage", syncCounts);
+    };
+  }, []);
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -17,7 +42,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#1f232c] bg-[#090a0d]/95 backdrop-blur-md">
-     <nav className="flex min-h-19 items-center justify-between px-5 sm:px-6 lg:px-7">
+      <nav className="flex min-h-18 items-center justify-between px-5 sm:px-6 lg:px-7">
         {/* Logo */}
         <Link
           href="/"
@@ -70,7 +95,7 @@ export default function Navbar() {
             <span>Plan</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b6ff00] px-1.5 text-[11px] font-bold text-black">
-              0
+              {planCount}
             </span>
           </Link>
 
@@ -81,7 +106,7 @@ export default function Navbar() {
             <span>Saved</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-[#343a46] px-1.5 text-[11px] text-[#c4c8d0]">
-              0
+              {savedCount}
             </span>
           </Link>
         </div>
@@ -153,7 +178,7 @@ export default function Navbar() {
                 <span>Plan</span>
 
                 <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#b6ff00] px-2 text-xs font-bold text-black">
-                  0
+                  {planCount}
                 </span>
               </Link>
 
@@ -165,7 +190,7 @@ export default function Navbar() {
                 <span>Saved</span>
 
                 <span className="flex h-6 min-w-6 items-center justify-center rounded-full border border-[#343a46] px-2 text-xs text-[#c4c8d0]">
-                  0
+                  {savedCount}
                 </span>
               </Link>
             </div>
