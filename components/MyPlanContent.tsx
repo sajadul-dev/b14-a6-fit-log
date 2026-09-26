@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -134,21 +135,33 @@ export default function MyPlanContent() {
     };
   }, []);
 
+  const currentList = activeTab === "plan" ? plan : saved;
+
+  /* 
+   * IMPORTANT:
+   * Metrics now use the currently selected tab's data.
+   * Plan tab   -> plan totals
+   * Saved tab  -> saved totals
+   */
+  const exercisesCount = currentList.length;
+
   const minutes = useMemo(
-    () => plan.reduce((total, workout) => total + workout.duration, 0),
-    [plan],
+    () =>
+      currentList.reduce(
+        (total, workout) => total + workout.duration,
+        0,
+      ),
+    [currentList],
   );
 
   const calories = useMemo(
     () =>
-      plan.reduce(
+      currentList.reduce(
         (total, workout) => total + workout.caloriesBurned,
         0,
       ),
-    [plan],
+    [currentList],
   );
-
-  const currentList = activeTab === "plan" ? plan : saved;
 
   const filteredAndSortedList = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -182,7 +195,9 @@ export default function MyPlanContent() {
 
   const handleRemove = (workout: Workout) => {
     if (activeTab === "plan") {
-      const updatedPlan = plan.filter((item) => item.id !== workout.id);
+      const updatedPlan = plan.filter(
+        (item) => item.id !== workout.id,
+      );
 
       savePlan(updatedPlan);
       setPlan(updatedPlan);
@@ -190,10 +205,13 @@ export default function MyPlanContent() {
       toast.success("Workout removed", {
         style: toastStyle,
       });
+
       return;
     }
 
-    const updatedSaved = saved.filter((item) => item.id !== workout.id);
+    const updatedSaved = saved.filter(
+      (item) => item.id !== workout.id,
+    );
 
     saveSaved(updatedSaved);
     setSaved(updatedSaved);
@@ -208,6 +226,7 @@ export default function MyPlanContent() {
       toast("Already marked as done", {
         style: toastStyle,
       });
+
       return;
     }
 
@@ -256,7 +275,7 @@ export default function MyPlanContent() {
           <p className="text-xs text-[#858b97]">Exercises</p>
 
           <p className="mt-1 font-display text-4xl font-semibold leading-none text-[#b6ff00]">
-            {plan.length}
+            {exercisesCount}
           </p>
         </div>
 
@@ -353,11 +372,13 @@ export default function MyPlanContent() {
                   }`}
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-4">
-                    <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-[#0e1014] sm:h-22 sm:w-32">
-                      <img
+                    <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-[#0e1014] sm:h-22 sm:w-32">
+                      <Image
                         src={workout.image}
                         alt={workout.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="128px"
+                        className="object-cover"
                       />
                     </div>
 
