@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#1d1d1d] p-4 text-white sm:p-6">
-     <div className="mx-auto min-h-screen max-w-350 bg-[#090a0d]">
+      <div className="mx-auto min-h-[120vh] max-w-350 bg-[#090a0d]">
         <section className="flex min-h-[80vh] items-center justify-center">
           <div className="text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#b6ff00]">
