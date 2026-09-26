@@ -16,16 +16,20 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
   background: #090a0d;
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
+
 .font-display {
-  font-family: var(--font-display), Arial Narrow, sans-serif;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
 }
 
 button,
@@ -39,5 +43,6 @@ button {
 
 img {
   max-width: 100%;
+  height: auto;
   display: block;
 }
